@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='img.png') }}");
+        background-size: cover;
+        background-attachment: fixed;
+    }
+</style>
+<head>
+    <title>Quake-Earthquake Predictor</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<header>ENTER PARAMETERS</header>
+<body>
+    <form id="form" class="topBefore" action="{{ url_for('detect') }}" method="POST" style="border: 2px solid #c39b77; padding: 20px; border-radius: 10px;">
+        <input type="text" id="lat" name="lat" placeholder="ENTER LATITUDE">
+        <input type="text" id="long" name="long" placeholder="ENTER LONGITUDE">
+        <input type="text" id="depth" name="depth" placeholder="ENTER DEPTH">
+        <input type="text" id="azu" name="azu" placeholder="ENTER AZIMUTHAL GAP">
+        <input type="text" id="rms" name="rms" placeholder="ENTER RMS">
+        <input type="submit" value="Detect" class="button" id="button">
+    </form>
+    <a href="/helpline" class="button">Disaster Management Helpline</a>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(fillLocationFields);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function fillLocationFields(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            document.getElementById("lat").value = latitude.toFixed(6);
+            document.getElementById("long").value = longitude.toFixed(6);
+
+            // Calculate Azimuthal Gap
+            var ds = JSON.parse('{{ ds | tojson | safe }}');
+            var gap = calculateAzimuthalGap(latitude, longitude, ds);
+            document.getElementById("azu").value = gap.toFixed(2);
+        }
+
+        function calculateAzimuthalGap(lat, lon, ds) {
+            // Convert latitude and longitude to radians
+            var lat_rad = lat * (Math.PI / 180);
+            var lon_rad = lon * (Math.PI / 180);
+            var latitude = ds.map(function(record) { return record['latitude']; });
+            var longitude = ds.map(function(record) { return record['longitude']; });
+
+            var azimuths = [];
+
+            for (var i = 0; i < latitude.length; i++) {
+                // Convert earthquake latitude and longitude to radians
+                var eq_lat_rad = latitude[i] * (Math.PI / 180);
+                var eq_lon_rad = longitude[i] * (Math.PI / 180);
+
+                // Calculate the azimuth between the location and earthquake
+                var d_lon = eq_lon_rad - lon_rad;
+                var y = Math.sin(d_lon) * Math.cos(eq_lat_rad);
+                var x = Math.cos(lat_rad) * Math.sin(eq_lat_rad) - Math.sin(lat_rad) * Math.cos(eq_lat_rad) * Math.cos(d_lon);
+                var azimuth = Math.atan2(y, x) * (180 / Math.PI);
+
+                azimuths.push(azimuth);
+            }
+
+            // Calculate the azimuthal gap
+            var gap = 360 - (Math.max(...azimuths) - Math.min(...azimuths));
+            return gap;
+        }
+
+        // Call getLocation function when the page loads
+        window.onload = function () {
+            getLocation();
+        };
+    </script>
+</body>
+</html>

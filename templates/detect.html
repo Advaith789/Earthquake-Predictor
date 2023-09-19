@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Earthquake Detection Result</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <style>
+        body {
+  	  background-image: url("{{ url_for('static', filename='img.png') }}");
+          background-size: cover;
+          background-attachment: fixed;
+        }
+    </style>
+</head>
+<header>RESULTS</header>
+<body>
+<div align=center class="topBefore" style="border: 2px solid #c39b77; padding: 20px; border-radius: 10px;">
+  <p>Latitude:</strong> {{ lat }}</p>
+  <p>Longitude:</strong> {{ long }}</p>
+  <p>Depth:</strong> {{ depth }}</p>
+  <p>Azimuthal Gap:</strong> {{ azu }}</p>
+  <p>Root Mean Square Value:</strong> {{ rms }}</p>
+  <p>Result: </strong> {{ result }}</p>       
+</div>
+</body>
+</html>

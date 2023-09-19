@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html><style>
+body {
+  background-image: url("{{ url_for('static', filename='img.png') }}");
+  background-size: cover;
+  background-attachment: fixed;
+}</style>
+<head>
+    <title>Quake-Earthquake Predictor</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<header>ENTER PARAMETERS</header>
+<body>
+<form id="form" class="topBefore" action="{{ url_for('detect') }}" method="POST" style="border: 2px solid #c39b77; padding: 20px; border-radius: 10px;">
+  <input type="text" id="lat" name="lat" placeholder="ENTER LATITUDE">
+  <input type="text" id="long" name="long" placeholder="ENTER LONGITUDE">
+  <input type="text" id="depth" name="depth" placeholder="ENTER DEPTH">
+  <input type="text" id="azu" name="azu" placeholder="ENTER AZIMUTHAL GAP">
+  <input type="text" id="rms" name="rms" placeholder="ENTER RMS">
+  <input type="submit" value="Detect" class="button" id="button">
+</form>
+        <a href="/helpline" class = "button">Disaster Management Helpline</a>
+</body>
+</html>
